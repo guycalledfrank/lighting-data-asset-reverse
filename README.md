@@ -1,6 +1,6 @@
 # Reverse-engineering Lighting Data Assets
 
-Lighting data assets are little annonying misteries. Unity uses them to store:
+Lighting data assets are little annonying mysteries. Unity uses them to store:
 * Baked lightmap list (https://docs.unity3d.com/ScriptReference/LightmapSettings-lightmaps.html)
 * Some per-light settings (at least the LightBakingOutput structure: https://docs.unity3d.com/ScriptReference/LightBakingOutput.html)
 * Some per-renderer settings (notably lightmapIndex and lightScaleOffset: https://docs.unity3d.com/ScriptReference/Renderer-lightmapIndex.html)
