@@ -22,6 +22,7 @@ What is currently known:
 * First part of the file contains unknown data (general serialization stuff?). But if you look for the "LightingData" string, surrounding bytes might make sense.
 
 If you have Hex Workshop, you can use my Structure file (ldata.hsl) to help viewing the assets. If not, you can still read it as a format spec.
+
 Notes on Structure files: http://www.hexworkshop.com/onlinehelp/500/html/idhelp_structure_libraries.htm
 
 The file is based on Unity 5.6 lighting data asset format. There are likely some changes in newer versions.
