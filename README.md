@@ -9,7 +9,7 @@ Lighting data assets are little annonying misteries. Unity uses them to store:
 
 Unity does not want to open the format or provide more read/write APIs for the asset (https://forum.unity.com/threads/lighting-data-asset-was-a-mistake.547591), so some reverse-engineering can be useful.
 
-Unfortunately I'm not really good at it, so mainly I'm creating this repository as a starting point. Hopefully other people will join and expand the knowledge.
+Unfortunately I'm not really good at it, so mainly I'm creating this repository as a starting point. Hopefully other people will join and expand this knowledge.
 
 What is currently known:
 
