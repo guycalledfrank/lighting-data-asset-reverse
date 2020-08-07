@@ -17,7 +17,7 @@ What is currently known:
 
 * The asset is likely using some general data packing scheme applicable to other assets as well.
 
-* First part of the file contains unknown data (general serialization stuff?). But if look for the "LightingData" string, surrounding bytes might make sense.
+* First part of the file contains unknown data (general serialization stuff?). But if you look for the "LightingData" string, surrounding bytes might make sense.
 
 If you have Hex Workshop, you can use my Structure file (ldata.hsl) to help viewing the assets. If not, you can still read it as a format spec.
 
