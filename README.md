@@ -15,7 +15,7 @@ What is currently known:
 
 * Lighting data asset format can differ from version to version, but the differences are usually minor and the engine is often able to load older assets.
 
-* The asset is likely using some general data packing scheme applicable for other assets as well.
+* The asset is likely using some general data packing scheme applicable to other assets as well.
 
 * First part of the file contains unknown data (general serialization stuff?). But if look for the "LightingData" string, surrounding bytes might make sense.
 
