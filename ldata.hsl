@@ -1,0 +1,235 @@
+#pragma enumsize(4)
+#pragma pack(1)
+
+// Default to show all structures
+#pragma show()
+
+typedef signed   __int64 S64;
+typedef unsigned __int32 U32;
+typedef unsigned __int16 U16;
+typedef unsigned __int8 U8;
+
+#pragma byteorder(little_endian)
+
+struct PPTR
+{
+    int fileID;
+    S64 pathID;
+};
+
+struct USTRING
+{
+    U32 strLength;
+    char str[((strLength+3)/4)*4]; // "align" to 4 bytes
+};
+
+struct Vector3
+{
+    float x;
+    float y;
+    float z;
+};
+
+struct SphericalHarmonicsL2
+{
+    float coeff[27];
+};
+
+struct Tetrahedron
+{
+    int indices[4];
+    int neighbours[4];
+    float matrix3x4[12];
+};
+
+struct TetrahedraArray
+{
+    int count;
+    struct Tetrahedron elements[count];
+};
+
+struct Vec3Array
+{
+    int count;
+    struct Vector3 elements[count];
+};
+
+struct ProbeSet
+{
+    U8 hash[16];
+    int offset;   // 0
+    int size;     // 16
+};
+
+struct ProbeSetsArray
+{
+    int count;
+    struct ProbeSet sets[count];
+};
+
+struct Tetrahedralization
+{
+    struct TetrahedraArray tetrahedra;
+    struct Vec3Array hullRays;
+};
+
+struct LightProbeData
+{
+      struct Tetrahedralization tetrahedralization;
+      struct ProbeSetsArray probeSets;
+      struct Vec3Array positions;
+      U32 nonTetrahedralizedProbeSetIndexMap; // should be an assotiative map, but usually just 0
+};
+
+struct SHArray
+{
+    int count;
+    struct SphericalHarmonicsL2 elements[count];
+};
+
+struct LightProbeOcclusion
+{
+    int size1; // 4
+    int probeOcclusionLightIndex[4]; // which lights to occlude (set to -1 for no light)
+
+    int size2; // 4
+    float occlusion[4]; // occlusion value per indexed light
+
+    int size3; // 4
+    U8 occlusionMaskChannel[4]; // shadowmask channel to occlude (set to -1 for no channel)
+};
+
+struct OPArray
+{
+    int count;
+    struct LightProbeOcclusion elements[count];
+};
+
+struct LightProbes
+{
+    U32 objectHideFlags;              // usually 9
+    struct PPTR prefabParentObject;     // zeros
+    struct PPTR prefabInternal;         // zeros
+    struct USTRING lightingDataHeader;  // says "LightingData"
+
+    struct LightProbeData probeStructureData;
+    struct SHArray bakedProbes;
+    struct OPArray bakedOcclusionProbes;
+};
+
+struct LightmapData
+{
+    struct PPTR lightmap;
+    struct PPTR dirLightmap;
+    struct PPTR shadowMask;
+};
+
+struct LightmapArray
+{
+    int count;
+    struct LightmapData lightmaps[count];
+};
+
+struct RendererData
+{
+    struct PPTR uvMesh;
+    float terrainDynamicUVST[4];
+    float terrainChunkDynamicUVST[4];
+    U16 lightmapIndex;
+    U16 lightmapIndexDynamic;
+    float lightmapST[4];
+    float lightmapSTDynamic[4];
+};
+
+struct LightmappedRendererData
+{
+    int count;
+    struct RendererData rendererData[count];
+};
+
+struct SceneObjectIdentifier
+{
+    S64 targetObject;
+    S64 targetPrefab;
+};
+
+struct SceneIDArray
+{
+    int count;
+    struct SceneObjectIdentifier elements[count];
+};
+
+struct EnlightenSceneMapping
+{
+    // I didn't analyze Enlighten data so here it is assumed that realtime GI was NOT used
+    int renderersArraySize;                  // 0
+    int systemsArraySize;                    // 0
+    int probeSetCount;                       // apparently the same as in LightProbeData
+    U8 probeSetHashes[probeSetCount * 16];   // apparently the same as in LightProbeData
+    int systemAtlasesSize;                   // 0
+    int terrainChunksSize;                   // 0
+};
+
+struct PPTRArray
+{
+    int count;
+    struct PPTR elements[count];
+};
+
+struct LightBakingOutput
+{
+    // incomplete information
+
+    // if this light is main directional with Subtractive mode, all bits are set (0xFFFFFFFF), otherwise 0
+    U32 isSubtractive;
+
+    // which shadowmask channel to use; set to -1 if there is no mask
+    U32 occlusionMaskChannel;
+
+    // it is known that for subtractive lights the value is 131076, otherwise 131080
+    U32 flags;
+};
+
+struct LightBakingOutputArray
+{
+    int count;
+    struct LightBakingOutput elements[count];
+};
+
+struct LightingDataAsset
+{
+    U32 objectHideFlags;                                            // usually 0
+    struct PPTR prefabParentObject;                                 // zeros
+    struct PPTR prefabInternal;                                     // zeros
+    struct USTRING lightingDataHeader;                              // usually filename of the asset without the extension
+
+    struct LightmapArray lightmaps;                                 // same as LightmapSettings.lightmaps
+    struct PPTR lightProbes;                                        // points to LightProbes object in the same file
+    int lightmapsMode;
+
+    struct SphericalHarmonicsL2 bakedAmbientProbeInLinear;          // skybox ambient SH
+    struct LightmappedRendererData lightmappedRendererData;         // per-renderer settings
+    struct SceneIDArray lightmappedRendererDataIDs;                 // scene IDs of modified renderers
+
+    struct EnlightenSceneMapping enlightenSceneMapping;
+    int enlightenSceneMappingRendererIDsCount;                      // array count; set to 0 assuming no realtime GI
+
+    struct PPTRArray lightIDs;                                      // which lights to patch
+    struct LightBakingOutputArray lightBakingOutputs;               // same as LightBakingOutput C# class, set per-light
+
+    struct PPTRArray bakedReflectionProbeCubemaps;
+    struct SceneIDArray bakedReflectionProbes;
+
+    int enlightDataSize;
+    U8 enlightData[enlightDataSize];
+    int enlightenDataVersion;
+};
+
+// Start here
+struct LightingDataAssetFile
+{
+    // data before this is unknown
+
+    struct LightProbes probeSubAsset;
+    struct LightingDataAsset mainAsset;
+};
